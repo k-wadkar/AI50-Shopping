@@ -111,7 +111,6 @@ def train_model(evidence, labels):
     return neigh.fit(evidence, labels)
     
 
-
 def evaluate(labels, predictions):
     """
     Given a list of actual labels and a list of predicted labels,
@@ -127,7 +126,19 @@ def evaluate(labels, predictions):
     representing the "true negative rate": the proportion of
     actual negative labels that were accurately identified.
     """
-    raise NotImplementedError
+    classifiedPositives = []
+    classifiedNegatives = []
+
+    for labelNum in range(len(labels)):
+        if labels[labelNum]:
+            classifiedPositives.append(predictions[labelNum])
+        else:
+            classifiedNegatives.append(predictions[labelNum])
+
+    sensitivity = classifiedPositives.count(1)/len(classifiedPositives)
+    specificity = classifiedNegatives.count(0)/len(classifiedNegatives)
+
+    return (sensitivity, specificity)
 
 
 if __name__ == "__main__":

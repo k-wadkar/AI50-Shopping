@@ -30,6 +30,9 @@ def main():
     print(f"True Positive Rate: {100 * sensitivity:.2f}%")
     print(f"True Negative Rate: {100 * specificity:.2f}%")
 
+def convert_month_to_numerical(month):
+    months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    return months.index(month)
 
 def load_data(filename):
     """
@@ -38,30 +41,64 @@ def load_data(filename):
 
     evidence should be a list of lists, where each list contains the
     following values, in order:
-        - Administrative, an integer
-        - Administrative_Duration, a floating point number
-        - Informational, an integer
-        - Informational_Duration, a floating point number
-        - ProductRelated, an integer
-        - ProductRelated_Duration, a floating point number
-        - BounceRates, a floating point number
-        - ExitRates, a floating point number
-        - PageValues, a floating point number
-        - SpecialDay, a floating point number
-        - Month, an index from 0 (January) to 11 (December)
-        - OperatingSystems, an integer
-        - Browser, an integer
-        - Region, an integer
-        - TrafficType, an integer
-        - VisitorType, an integer 0 (not returning) or 1 (returning)
-        - Weekend, an integer 0 (if false) or 1 (if true)
+    0    - Administrative, an integer
+    1    - Administrative_Duration, a floating point number
+    2    - Informational, an integer
+    3    - Informational_Duration, a floating point number
+    4    - ProductRelated, an integer
+    5    - ProductRelated_Duration, a floating point number
+    6    - BounceRates, a floating point number
+    7    - ExitRates, a floating point number
+    8    - PageValues, a floating point number
+    9    - SpecialDay, a floating point number
+    10    - Month, an index from 0 (January) to 11 (December)
+    11    - OperatingSystems, an integer
+    12    - Browser, an integer
+    13    - Region, an integer
+    14    - TrafficType, an integer
+    15    - VisitorType, an integer 0 (not returning) or 1 (returning)
+    16    - Weekend, an integer 0 (if false) or 1 (if true)
 
     labels should be the corresponding list of labels, where each label
     is 1 if Revenue is true, and 0 otherwise.
     """
-    raise NotImplementedError
+    # Creates a list containing 17 empty sublists
+    evidence = []
+    labels = []
 
+    with open(filename, 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        next(csv_reader)
 
+        for line in csv_reader:
+            listToAppend = []
+            for index in range(17):
+                if index == 10:
+                    listToAppend.append(convert_month_to_numerical(line[index]))
+                elif index == 15:
+                    if line[index] == "Returning_Visitor":
+                        listToAppend.append(1)
+                    else:
+                        listToAppend.append(0)
+                elif index == 16:
+                    if line[index]:
+                        listToAppend.append(1)
+                    else:
+                        listToAppend.append(0)
+                elif index in [0, 2, 4, 11, 12, 13, 14]:
+                    listToAppend.append(int(line[index]))
+                else:
+                    listToAppend.append(float(line[index]))
+
+            evidence.append(listToAppend)
+
+            if line[17]:
+                labels.append(1)
+            else:
+                labels.append(0)
+    
+    return (evidence, labels)
+        
 def train_model(evidence, labels):
     """
     Given a list of evidence lists and a list of labels, return a

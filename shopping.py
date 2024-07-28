@@ -16,7 +16,7 @@ def main():
     # Load data from spreadsheet and split into train and test sets
     evidence, labels = load_data(sys.argv[1])
     X_train, X_test, y_train, y_test = train_test_split(
-        evidence, labels, test_size=TEST_SIZE
+        evidence, labels, test_size=TEST_SIZE, stratify=labels
     )
 
     # Train model and make predictions
@@ -83,7 +83,7 @@ def load_data(filename):
                     else:
                         listToAppend.append(0)
                 elif index == 16:
-                    if line[index]:
+                    if line[index] == "TRUE":
                         listToAppend.append(1)
                     else:
                         listToAppend.append(0)
@@ -94,11 +94,11 @@ def load_data(filename):
 
             evidence.append(listToAppend)
 
-            if line[17]:
+            if line[17] == "TRUE":
                 labels.append(1)
             else:
                 labels.append(0)
-    
+
     return (evidence, labels)
 
 
@@ -134,9 +134,15 @@ def evaluate(labels, predictions):
             classifiedPositives.append(predictions[labelNum])
         else:
             classifiedNegatives.append(predictions[labelNum])
+    if len(classifiedPositives) != 0:
+        sensitivity = classifiedPositives.count(1)/len(classifiedPositives)
+    else:
+        sensitivity = 0
 
-    sensitivity = classifiedPositives.count(1)/len(classifiedPositives)
-    specificity = classifiedNegatives.count(0)/len(classifiedNegatives)
+    if len(classifiedNegatives) != 0:
+        specificity = classifiedNegatives.count(0)/len(classifiedNegatives)
+    else:
+        specificity = 0
 
     return (sensitivity, specificity)
 

@@ -30,9 +30,11 @@ def main():
     print(f"True Positive Rate: {100 * sensitivity:.2f}%")
     print(f"True Negative Rate: {100 * specificity:.2f}%")
 
+
 def convert_month_to_numerical(month):
     months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     return months.index(month)
+
 
 def load_data(filename):
     """
@@ -98,13 +100,16 @@ def load_data(filename):
                 labels.append(0)
     
     return (evidence, labels)
-        
+
+
 def train_model(evidence, labels):
     """
     Given a list of evidence lists and a list of labels, return a
     fitted k-nearest neighbor model (k=1) trained on the data.
     """
-    raise NotImplementedError
+    neigh = KNeighborsClassifier(n_neighbors=1)
+    return neigh.fit(evidence, labels)
+    
 
 
 def evaluate(labels, predictions):
